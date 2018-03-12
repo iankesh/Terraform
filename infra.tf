@@ -4,11 +4,30 @@ provider "aws" {
   region     = "${var.region}"
 }
 
+resource "aws_security_group" "infra"{
+    name="terraform-infra"
+    description="Created by terraform"
+ 
+    ingress{
+        from_port = 22
+        to_port = 22
+        protocol= "tcp"
+        cidr_blocks = ["0.0.0.0/0"]
+    }
+    ingress{
+        from_port = 80
+        to_port = 80
+        protocol = "tcp"
+        cidr_blocks = ["0.0.0.0/0"]
+    }
+ 
+}
+
 resource "aws_instance" "infra" {
   ami           = "ami-66506c1c"
   instance_type = "t2.micro"
   key_name = "${var.key_name}"
-  security_groups = ["launch-wizard-1"]
+  security_groups = ["${aws_security_group.infra.name}"]
 
   tags {
     Name = "infra"
