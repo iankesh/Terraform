@@ -4,8 +4,8 @@ provider "aws" {
   region     = "${var.region}"
 }
 
-resource "aws_security_group" "infra"{
-    name="terraform-infra"
+resource "aws_security_group" "tinfra"{
+    name="terraform-tinfra"
     description="Created by terraform"
  
     ingress{
@@ -23,28 +23,38 @@ resource "aws_security_group" "infra"{
  
 }
 
-resource "aws_instance" "infra" {
+resource "aws_instance" "tinfra" {
   ami           = "ami-66506c1c"
   instance_type = "t2.micro"
   key_name = "${var.key_name}"
-  security_groups = ["${aws_security_group.infra.name}"]
+  security_groups = ["${aws_security_group.tinfra.name}"]
 
   tags {
-    Name = "infra"
+    Name = "tinfra"
   }
 
   connection {
     user = "ubuntu"
-    private_key = "${var.key_path}"
-    type = "ssh"
-  }
+    private_key = "${file("/home/ubuntu/Ran_NV.pem")}"
+    }
 
 provisioner "local-exec" {
     command = "rm ip_address.txt"
-    command = "echo ${aws_instance.infra.public_ip} > ip_address.txt"
+    command = "echo ${aws_instance.tinfra.public_ip} > ip_address.txt"
 }
+
+provisioner "remote-exec"{
+ 
+        inline=[
+            "pwd",
+            "sudo apt-get -y install nginx",
+            "sudo service nginx restart",
+            "sudo service nginx status"
+           ]
+     }
+
 }
 
 output "ip" {
-  value = "${aws_instance.infra.public_ip}"
+  value = "${aws_instance.tinfra.public_ip}"
 }
