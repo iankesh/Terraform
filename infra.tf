@@ -36,6 +36,7 @@ resource "aws_instance" "tinfra" {
   connection {
     user = "ubuntu"
     private_key = "${file("/home/ubuntu/Ran_NV.pem")}"
+
     }
 
 provisioner "local-exec" {
