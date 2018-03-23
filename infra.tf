@@ -47,9 +47,7 @@ provisioner "remote-exec"{
  
         inline=[
             "pwd",
-            "sudo apt-get -y install nginx",
-            "sudo service nginx restart",
-            "sudo service nginx status"
+            "git --version"
            ]
      }
 
