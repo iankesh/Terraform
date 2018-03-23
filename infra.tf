@@ -4,30 +4,11 @@ provider "aws" {
   region     = "${var.region}"
 }
 
-resource "aws_security_group" "tinfra"{
-    name="terraform-tinfra"
-    description="Created by terraform"
- 
-    ingress{
-        from_port = 22
-        to_port = 22
-        protocol= "tcp"
-        cidr_blocks = ["0.0.0.0/0"]
-    }
-    ingress{
-        from_port = 80
-        to_port = 80
-        protocol = "tcp"
-        cidr_blocks = ["0.0.0.0/0"]
-    }
- 
-}
-
 resource "aws_instance" "tinfra" {
   ami           = "ami-66506c1c"
   instance_type = "t2.micro"
   key_name = "${var.key_name}"
-  security_groups = ["${aws_security_group.tinfra.name}"]
+  security_groups = ["launch-wizard-1"]
 
   tags {
     Name = "tinfra"
@@ -48,7 +29,10 @@ provisioner "remote-exec"{
  
         inline=[
             "pwd",
-            "git --version"
+            "git --version",
+            "sudo apt-get -y update",
+            "sudo apt-get -y install nginx",
+            "sudo service nginx restart"
            ]
      }
 
